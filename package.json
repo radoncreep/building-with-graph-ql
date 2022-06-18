@@ -1,0 +1,29 @@
+{
+  "name": "graphql-p",
+  "version": "1.0.0",
+  "description": "graphql server with node.js and express",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/radoncreep/building-with-graph-ql.git"
+  },
+  "author": "radoncreep",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/radoncreep/building-with-graph-ql/issues"
+  },
+  "homepage": "https://github.com/radoncreep/building-with-graph-ql#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "express-graphql": "^0.12.0",
+    "graphql": "14.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16"
+  }
+}
