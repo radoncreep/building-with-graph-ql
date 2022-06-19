@@ -1,6 +1,8 @@
 const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
 
+const schema = require('./schema/schema');
+
 const app = express();
 
 // request made to this supercharged endpoint 
@@ -15,7 +17,8 @@ const app = express();
 // the relationships between the data types 
 // the schema represents how the graph looks or basically the structure of the graph
 app.use("/graphql", graphqlHTTP({
-    
+    schema: schema,
+    graphiql: true
 }));
 
 const PORT = process.env.PORT || 4000;
