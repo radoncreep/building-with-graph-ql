@@ -1,5 +1,4 @@
 const { 
-    buildSchema, 
     GraphQLObjectType, 
     GraphQLString, 
     GraphQLSchema, 
@@ -10,9 +9,12 @@ const _ = require("lodash");
 
 // dummy data
 const books = [
-    { name: "Name of the Wind", genre: "Fantasy", id: '4'},
-    { name: "The Final Empire", genre: "Fantasy", id: '2' },
-    { name: "The Long Earth", genre: "Sci-Fi", id: '3' }
+    { name: "Name of the Wind", genre: "Fantasy", id: '4', authorId: '1'},
+    { name: "The Final Empire", genre: "Fantasy", id: '2', authorId: '2' },
+    { name: "The Long Earth", genre: "Sci-Fi", id: '3', authorId: '3' },
+    { name: "The Hero of Ages", genre: "Fantasy", id: '1', authorId: '1'},
+    { name: "The Color of Magic", genre: "Fantasy", id: '5', authorId: '3' },
+    { name: "The Light Fantastic", genre: "Sci-Fi", id: '6', authorId: '2' }
 ];
 
 const authors = [
@@ -27,13 +29,21 @@ const authors = [
 // - Every author has a collection of books
 // - We can translate the above using TYPE RELATIONS
 
-// ENTITY/OBJECT TYPE DEFINITION
+// ENTITY/OBJECT TYPE DEFINITION  
 const BookType = new GraphQLObjectType({
     name: "Book",
     fields: () => ({
         id: { type: GraphQLID },
         name: { type: GraphQLString },
-        genre: { type: GraphQLString }
+        genre: { type: GraphQLString },
+        author: {
+            type: AuthorType,
+            resolve(parent, args) { // this is responsible for looking at the actual data and return what is needed
+                // we want to use it to tell graphql which author corresponds to this book
+                // console.log(parent);
+                return _.find(authors, { id: parent.authorId });
+            }
+        }
     })
 });
 
@@ -42,7 +52,15 @@ const AuthorType = new GraphQLObjectType({
     fields: () => ({
         id: { type: GraphQLID },
         name: { type: GraphQLString },
-        age: { type: GraphQLInt }
+        age: { type: GraphQLInt },
+        book: {
+            type: BookType,
+            resolve(parent, args) {
+                // console.log(parent);
+
+                return _.find(books, { authorId: parent.id })
+            }
+        }
     })
 });
 
