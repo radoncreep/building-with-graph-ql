@@ -3,7 +3,8 @@ const {
     GraphQLString, 
     GraphQLSchema, 
     GraphQLID,
-    GraphQLInt
+    GraphQLInt,
+    GraphQLList
 } = require("graphql");
 const _ = require("lodash");
 
@@ -28,6 +29,20 @@ const authors = [
 // - Every book has an author 
 // - Every author has a collection of books
 // - We can translate the above using TYPE RELATIONS
+
+// the fields for object definition are wrapped in a function because
+// at the time the graphql server runs each of the object types which have references to
+// other types will be stored in memory with their values
+// so if an object type is defined after it has been referenced by another object type
+// then it will throw a reference error and crash the server
+// if each object type is wrapped in a function that returns a object
+// the function is only saved to memory when the server spins up
+// and the function will only run when query is made for that object type which will then
+// execute the function it has
+// the reason why it isnt the same for the rootQuery is because the code is executed from top
+// to bottom and all other types which the rootQuery embodies have already been defined 
+// before they were referenced in the rootQuery, so that is a valid approach.
+
 
 // ENTITY/OBJECT TYPE DEFINITION  
 const BookType = new GraphQLObjectType({
@@ -54,11 +69,12 @@ const AuthorType = new GraphQLObjectType({
         name: { type: GraphQLString },
         age: { type: GraphQLInt },
         book: {
-            type: BookType,
+            // type: BookType, // returns a single entry,
+            type: new GraphQLList(BookType), // returns a list by filtering with the query
             resolve(parent, args) {
                 // console.log(parent);
 
-                return _.find(books, { authorId: parent.id })
+                return _.filter(books, { authorId: parent.id })
             }
         }
     })
@@ -86,6 +102,18 @@ const RootQuery = new GraphQLObjectType({
             args: { id: { type: GraphQLID }},
             resolve(parent, args) {
                 return _.find(authors, { id: args.id });
+            }
+        },
+        books: {
+            type: new GraphQLList(BookType),
+            resolve(parent, args) { // we wont be using any of these params in this case
+                return books
+            }
+        },
+        authors: {
+            type: new GraphQLList(AuthorType),
+            resolve(parent, args) {
+                return authors
             }
         }
     }
