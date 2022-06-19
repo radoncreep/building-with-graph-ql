@@ -17,7 +17,7 @@ const app = express();
 // the relationships between the data types 
 // the schema represents how the graph looks or basically the structure of the graph
 app.use("/graphql", graphqlHTTP({
-    schema: schema,
+    schema: schema, // defines the graph and object types of our graph
     graphiql: true
 }));
 
